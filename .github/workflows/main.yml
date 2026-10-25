@@ -1,1 +1,43 @@
+name: MagicLand Status - GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Repository herunterladen
+        uses: actions/checkout@v6
+
+      - name: GitHub Pages einrichten
+        uses: actions/configure-pages@v5
+
+      - name: Webseiten vorbereiten
+        run: |
+          mkdir -p _site
+          cp index.html terms.html privacy.html _site/
+
+      - name: Webseiten hochladen
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: GitHub Pages veroeffentlichen
+        id: deployment
+        uses: actions/deploy-pages@v4
 
